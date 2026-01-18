@@ -1,0 +1,45 @@
+<div
+  class="task-card"
+  [class.task-card--done]="task().status === 'DONE'"
+  [class.task-card--canceled]="task().status === 'CANCELED'"
+  [class.task-card--draggable]="isDraggable"
+  [draggable]="isDraggable"
+  (dragstart)="onDragStart($event)"
+  (dragend)="onDragEnd()"
+>
+  <div class="task-card__header">
+    <span
+      class="task-card__tag"
+      [style.background-color]="getStatusConfig(task().status).bgColor"
+      [style.color]="getStatusConfig(task().status).textColor"
+      [style.border-color]="getStatusConfig(task().status).borderColor"
+    >
+      <i [class]="getStatusConfig(task().status).icon"></i>
+      {{ getStatusConfig(task().status).label }}
+    </span>
+    <p-menu #menu [model]="getMenuItems()" [popup]="true" appendTo="body" />
+    <button
+      class="task-card__menu-btn"
+      (click)="menu.toggle($event); $event.stopPropagation()"
+      type="button"
+      title="Options"
+    >
+      <span class="task-card__menu-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  </div>
+
+  <div class="task-card__content" (click)="handleCardClick()">
+    <h3 class="task-card__title">{{ task().title }}</h3>
+    <p class="task-card__description">{{ task().description }}</p>
+  </div>
+
+  @if (isDraggable) {
+    <div class="task-card__drag-hint">
+      <i class="pi pi-arrows-alt"></i>
+    </div>
+  }
+</div>

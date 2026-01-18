@@ -1,0 +1,23 @@
+# Environment files with sensitive data
+.env
+
+# Keep example files
+!.env.example
+!.env.spring
+!.env.quarkus
+
+# Docker volumes
+postgres_data/
+mysql_data/
+pgadmin_data/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+to-do-app-backend/to-do-app-backend/nul

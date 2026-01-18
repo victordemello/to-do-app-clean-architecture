@@ -1,0 +1,266 @@
+services:
+  # ========================================
+  # SPRING BOOT + POSTGRESQL STACK
+  # ========================================
+
+  # PostgreSQL Database
+  postgres:
+    profiles: ["spring"]
+    image: postgres:16-alpine
+    container_name: todo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tododb}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-tododb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # pgAdmin - PostgreSQL Admin Interface
+  pgadmin:
+    profiles: ["spring"]
+    image: dpage/pgadmin4:8
+    container_name: todo-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - todo-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Spring Boot Backend
+  backend-spring:
+    profiles: ["spring"]
+    build:
+      context: ./to-do-app-backend/to-do-app-backend
+      dockerfile: Dockerfile
+    container_name: todo-backend-spring
+    restart: unless-stopped
+    environment:
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-tododb}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DDL_AUTO: ${DDL_AUTO:-update}
+
+      # Server Configuration
+      SERVER_PORT: 8080
+
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_LOG_LEVEL: ${APP_LOG_LEVEL:-DEBUG}
+      SPRING_LOG_LEVEL: ${SPRING_LOG_LEVEL:-INFO}
+      SQL_LOG_LEVEL: ${SQL_LOG_LEVEL:-INFO}
+      SQL_BIND_LOG_LEVEL: ${SQL_BIND_LOG_LEVEL:-INFO}
+      SHOW_SQL: ${SHOW_SQL:-false}
+
+      # CORS
+      CORS_ALLOWED_ORIGINS: http://localhost:80,http://localhost:4200,http://frontend:80
+
+      # JVM Options (optimized for containers)
+      JAVA_OPTS: >-
+        -XX:+UseContainerSupport
+        -XX:MaxRAMPercentage=75.0
+        -XX:InitialRAMPercentage=50.0
+        -XX:+UseG1GC
+        -Djava.security.egd=file:/dev/./urandom
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    networks:
+      - todo-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ========================================
+  # QUARKUS + MYSQL STACK
+  # ========================================
+
+  # MySQL Database
+  mysql:
+    profiles: ["quarkus"]
+    image: mysql:8.0
+    container_name: todo-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tododb}
+      MYSQL_USER: ${MYSQL_USER:-todouser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-todopassword}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    networks:
+      - todo-network
+    command: --authentication-policy=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "${MYSQL_USER:-todouser}", "-p${MYSQL_PASSWORD:-todopassword}", "-e", "SELECT 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  # Adminer - MySQL Admin Interface
+  adminer:
+    profiles: ["quarkus"]
+    image: adminer:4.8.1
+    container_name: todo-adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+      ADMINER_DESIGN: nette
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    networks:
+      - todo-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Quarkus Backend
+  backend-quarkus:
+    profiles: ["quarkus"]
+    build:
+      context: ./to-do-app-backend
+      dockerfile: Dockerfile.quarkus
+    container_name: todo-backend-quarkus
+    restart: unless-stopped
+    environment:
+      # Database Configuration
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-tododb}
+      DB_USER: ${MYSQL_USER:-todouser}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-todopassword}
+      DDL_AUTO: ${DDL_AUTO:-update}
+
+      # Server Configuration
+      SERVER_PORT: 8080
+
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_LOG_LEVEL: ${APP_LOG_LEVEL:-DEBUG}
+      QUARKUS_LOG_LEVEL: ${QUARKUS_LOG_LEVEL:-INFO}
+
+      # CORS
+      CORS_ALLOWED_ORIGINS: http://localhost:80,http://localhost:4200,http://frontend:80
+
+      # JVM Options (optimized for containers)
+      JAVA_OPTS: >-
+        -XX:+UseContainerSupport
+        -XX:MaxRAMPercentage=75.0
+        -Djava.security.egd=file:/dev/./urandom
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    networks:
+      - todo-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ========================================
+  # FRONTEND
+  # ========================================
+
+  # Angular Frontend for Spring Boot stack
+  frontend-spring:
+    profiles: ["spring"]
+    build:
+      context: ./to-do-app-web
+      dockerfile: Dockerfile
+    container_name: todo-frontend
+    restart: unless-stopped
+    environment:
+      API_URL: ${API_URL:-http://localhost:8080}
+      BACKEND_HOST: backend-spring
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - todo-network
+    depends_on:
+      backend-spring:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # Angular Frontend for Quarkus stack
+  frontend-quarkus:
+    profiles: ["quarkus"]
+    build:
+      context: ./to-do-app-web
+      dockerfile: Dockerfile
+    container_name: todo-frontend
+    restart: unless-stopped
+    environment:
+      API_URL: ${API_URL:-http://localhost:8080}
+      BACKEND_HOST: backend-quarkus
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - todo-network
+    depends_on:
+      backend-quarkus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+# Networks
+networks:
+  todo-network:
+    driver: bridge
+    name: todo-network
+
+# Volumes
+volumes:
+  # Spring Boot volumes
+  postgres_data:
+    name: todo-postgres-data
+  pgadmin_data:
+    name: todo-pgadmin-data
+
+  # Quarkus volumes
+  mysql_data:
+    name: todo-mysql-data

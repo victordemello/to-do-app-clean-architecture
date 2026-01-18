@@ -1,0 +1,36 @@
+<div class="home">
+  <app-header (onNewTask)="openNewTaskDialog()" />
+
+  <main class="home__content">
+    @if (loading()) {
+      <div class="home__loading">
+        <p-progressSpinner strokeWidth="4" />
+        <p>Loading tasks...</p>
+      </div>
+    } @else {
+      <div class="home__board">
+        @for (status of columns; track status) {
+          <app-task-column
+            [status]="status"
+            [tasks]="getTasksByStatus(status)"
+            (onEditTask)="openEditDialog($event)"
+            (onStatusChange)="handleStatusChange($event)"
+            (onDeleteTask)="handleDelete($event)"
+          />
+        }
+      </div>
+    }
+  </main>
+
+  <app-task-form-dialog
+    [visible]="dialogVisible()"
+    [task]="selectedTask()"
+    [loading]="formLoading()"
+    (onHide)="closeDialog()"
+    (onCreate)="handleCreate($event)"
+    (onUpdate)="handleUpdate($event)"
+  />
+
+  <p-toast position="top-right" />
+  <p-confirmDialog />
+</div>
