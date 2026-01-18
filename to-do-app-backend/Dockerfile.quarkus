@@ -9,6 +9,9 @@ COPY to-do-app-backend/.mvn/ .mvn/
 COPY to-do-app-backend/mvnw ./
 COPY to-do-app-backend/pom.xml ./
 
+# Fix Windows line endings (CRLF -> LF) and ensure mvnw is executable
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
+
 # Copy module POMs
 COPY to-do-app-backend/to-do-app-core/pom.xml to-do-app-core/
 COPY to-do-app-backend/to-do-app-infra-quarkus/pom.xml to-do-app-infra-quarkus/
