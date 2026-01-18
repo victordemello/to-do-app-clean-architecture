@@ -15,9 +15,9 @@
 
 <!-- Animated Typing -->
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=6366F1&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=80&lines=Enterprise-Grade+Task+Management;Clean+Architecture+%2B+DDD+%2B+Hexagonal;Spring+Boot+%7C+Quarkus+%7C+Angular" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=6366F1&center=true&vCenter=true&multiline=true&repeat=true&width=600&height=100&lines=Enterprise-Grade+Task+Management;Clean+Architecture+%2B+DDD+%2B+Hexagonal;Spring+Boot+%7C+Quarkus+%7C+Angular" alt="Typing SVG" />
 </a>
-
+<br/><br/>
 <br/>
 
 <!-- Tech Badges -->
@@ -718,10 +718,10 @@ Contribuições são **muito bem-vindas**! 🎉
 <br/>
 
 <div align="center">
-  <a href="https://github.com/victormello">
+  <a href="https://github.com/victordemello">
     <img src="https://img.shields.io/badge/Victor_Mello-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
   </a>
-  <a href="https://linkedin.com/in/victormello">
+  <a href="https://www.linkedin.com/in/mellodevictor/">
     <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
   </a>
 </div>
