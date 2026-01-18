@@ -151,14 +151,14 @@
 
 ```mermaid
 flowchart TB
-    subgraph FRONTEND["🌐 FRONTEND - Angular 21 + PrimeNG"]
+    subgraph FRONTEND["🌐 FRONTEND - Angular 21"]
         direction LR
         UI["📱 Kanban Board UI"]
         COMP["🎨 Components + Services"]
         SIG["⚡ Angular Signals"]
     end
 
-    subgraph INFRA["🔌 INFRASTRUCTURE - Adapters"]
+    subgraph INFRA["INFRA - Adapters"]
         direction LR
         subgraph SPRING["🍃 Spring Boot"]
             SC["🎮 REST Controllers"]
@@ -172,7 +172,7 @@ flowchart TB
         end
     end
 
-    subgraph CORE["💎 CORE - Domain (Framework-Agnostic)"]
+    subgraph CORE["CORE - Domain"]
         direction LR
         subgraph USECASES["📋 Use Cases"]
             UC1["CreateTaskUseCase"]
@@ -811,14 +811,14 @@ Contribuições são **muito bem-vindas**! 🎉
 
 ```mermaid
 flowchart TB
-    subgraph FRONTEND["🌐 FRONTEND - Angular 21 + PrimeNG"]
+    subgraph FRONTEND["FRONTEND - Angular 21"]
         direction LR
         UI["📱 Kanban Board UI"]
         COMP["🎨 Components + Services"]
         SIG["⚡ Angular Signals"]
     end
 
-    subgraph INFRA["🔌 INFRASTRUCTURE - Adapters"]
+    subgraph INFRA["INFRA - Adapters"]
         direction LR
         subgraph SPRING["🍃 Spring Boot"]
             SC["🎮 REST Controllers"]
@@ -832,7 +832,7 @@ flowchart TB
         end
     end
 
-    subgraph CORE["💎 CORE - Domain (Framework-Agnostic)"]
+    subgraph CORE["CORE - Domain"]
         direction LR
         subgraph USECASES["📋 Use Cases"]
             UC1["CreateTaskUseCase"]
