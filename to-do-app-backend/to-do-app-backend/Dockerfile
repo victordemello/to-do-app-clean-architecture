@@ -8,6 +8,9 @@ WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
+# Fix Windows line endings (CRLF -> LF) and ensure mvnw is executable
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
+
 # Copy module POMs
 COPY to-do-app-core/pom.xml to-do-app-core/
 COPY to-do-app-infra-spring/pom.xml to-do-app-infra-spring/
