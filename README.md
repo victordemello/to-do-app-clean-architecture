@@ -627,18 +627,6 @@ curl -X PUT http://localhost:8080/api/task/550e8400-e29b-41d4-a716-446655440000 
 - ✅ **Integration Tests**: REST Controllers, Repositories
 - ✅ **Fake Repository**: Implementação em memória para testes isolados
 
-### 🎨 Frontend Tests
-
-```bash
-cd to-do-app-web
-
-# Executar testes unitários
-npm test
-
-# Executar com coverage
-npm run test:coverage
-```
-
 <br/>
 
 ## 🗺 Roadmap
@@ -1286,18 +1274,6 @@ curl -X PUT http://localhost:8080/api/task/550e8400-e29b-41d4-a716-446655440000 
 - ✅ **Unit Tests**: Task Entity, Value Objects, Use Cases
 - ✅ **Integration Tests**: REST Controllers, Repositories
 - ✅ **Fake Repository**: In-memory implementation for isolated tests
-
-### 🎨 Frontend Tests
-
-```bash
-cd to-do-app-web
-
-# Run unit tests
-npm test
-
-# Run with coverage
-npm run test:coverage
-```
 
 <br/>
 
